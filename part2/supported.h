@@ -50,7 +50,7 @@ class Ack : public Message {
 
 
 class Status : public Message {
-
+public:
 	String* msg_; // owned
 
 };
@@ -58,6 +58,7 @@ class Status : public Message {
 
 
 class Register : public Message {
+public:
 
 	sockaddr_in client;
 
@@ -68,6 +69,7 @@ class Register : public Message {
 
 
 class Directory : public Message {
+public:
 
 	size_t client;
 
