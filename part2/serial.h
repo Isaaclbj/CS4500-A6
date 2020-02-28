@@ -4,6 +4,7 @@
 #include <netinet/in.h>		//sockaddr_in for linux/others
 #endif
 
+#include <cstdio>
 #include "string.h"
 #include "object.h"
 #include "supported.h"
@@ -18,25 +19,19 @@
 
 /* In this case, we'll need to get put together size_ and cstr_ of the 
 	String* into the buffer. 
-	IN PROGRESS */
+	DONE */
 char* serialize(StringArray* val)
 {
+	char* size_buffer = new char[sizeof(val->vals_->size_) +
+		sizeof(val->vals_->size_) + 1];
+	sprintf(size_buffer, "%d", val->vals_->size_);
 
-	//a buffer for the data to load into
-	char* size_buffer;
-	char* val_buffer;
+	char* val_buffer = new char[sizeof(val->vals_->cstr_)];
+	memcpy(val_buffer, val->vals_->cstr_, sizeof(val->vals_->cstr_));
 
-	//memcopy String::size_
-	size_t* p_sos = &(val->vals_->size_);
-	memcpy(size_buffer, p_sos, val->vals_->size_);
+	strcat(size_buffer, (const char*)val_buffer);
 
-	//memcopy String::cstr_
-	size_t size_of_string = sizeof(val->vals_->cstr_);
-	memcpy(val_buffer, val->vals_, size_of_string);
-
-	strcat(val_buffer, (const char*)size_buffer);
-
-	return val_buffer;
+	return size_buffer;
 }
 
 /*	In this case, we can just memcpy the double* into the buffer.
