@@ -1,8 +1,16 @@
+
 build:
-	g++ bench.cpp -lpthread -o bench
+	g++ ./src/server.cpp -lpthread -o server
+	g++ ./src/client.cpp -lpthread -o client
 
 run: clean build
-	./bench
+	cp ./test/some_text.txt ./
+	./server -ip 127.0.0.1 &
+	./client -ip 127.0.0.2 & > temp.txt
+	./client -ip 127.0.0.3 < some_text.txt
+	
 clean:
-	rm -f bench.o
-	rm -f bench.exe
+	rm -f client
+	rm -f server
+	rm -f temp.txt
+	rm -f some_text.txt
