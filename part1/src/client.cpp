@@ -10,6 +10,54 @@
 #include <poll.h>
 #include <iostream>
 
+// struct dir_con_help
+// {
+//     int port;
+//     int server;
+// };
+
+
+static const int SERVER_PORT = 8080;
+
+// void*
+// dir_conn(void *input)
+// {
+//     dir_con_help *helper = (dir_con_help*) input;
+//     int port = helper->port;
+//     int server = helper->server;
+//     delete helper;
+
+//     printf("you may stop trying to connect with another client by entering END_OF_FILE\n");
+//     while(stdin)
+//     {
+//         char buffer[128];
+//         int len = recv(server, buffer, 128, 0);
+//         buffer[len] = 0;
+//         if(buffer[0] = '-')
+//         {
+//             return 0;
+//         }
+//         if(buffer[0] = '+')
+//         {
+//             int new_port = atoi(buffer+1);
+//             struct sockaddr_in dir;
+//             dir.sin_family = AF_INET;
+//             dir.sin_port = htons(new_port);
+//             dir.sin_addr.s_addr = htonl(INADDR_ANY);
+//             if(connect(port, (struct sockaddr *) & dir, sizeof(dir)) == -1)
+//             {
+//                 return 0;
+//             }
+//             while(1)
+//             {
+
+//             }
+//         }
+
+//     }
+//     return 0;
+// }
+
 void*
 get_msg(void *ss)
 {
@@ -20,7 +68,9 @@ get_msg(void *ss)
         char buffer[128];
         int len = recv(client, buffer, 128, 0);
         buffer[len] = 0;
-        printf("%s\n", buffer);
+
+        printf("%s", buffer);
+        
     }
     return 0;
 }
@@ -32,7 +82,7 @@ main(int argc, char**argv)
     struct sockaddr_in serv;
     sock = socket(AF_INET, SOCK_STREAM, 0);
     serv.sin_family = AF_INET;
-    serv.sin_port = htons(8080);
+    serv.sin_port = htons(SERVER_PORT);
 	serv.sin_addr.s_addr = htonl(INADDR_ANY);
 
     if(connect(sock, (struct sockaddr *) &serv, sizeof(serv)) == -1)
@@ -60,8 +110,24 @@ main(int argc, char**argv)
             ii++;
         }
         in_msg[ii + 1] = 0;
-	
-        send(sock, in_msg, 128, 0);
+
+        // if(!strncmp(in_msg, "-conn ", 6))
+        // {
+        //     int to_con = atoi(in_msg + 6);
+        //     printf("You are trying to connect with #%d server: %d ...\n", to_con, sock);
+        //     send(sock, in_msg, 128, 0);
+        //     pthread_t dir_conn_thread = thread;
+        //     dir_con_help *pass = new dir_con_help;
+        //     pass->port = to_con;
+        //     pass->server = sock;
+        //     pthread_create(&dir_conn_thread, 0, dir_conn, pass);
+        //     pthread_join(dir_conn_thread, 0);
+        // }
+        // else
+        // {
+            send(sock, in_msg, 128, 0);
+        // }
+        
     }
     exit(0);
 }

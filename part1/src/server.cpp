@@ -139,7 +139,7 @@ main(const int argc, const char **argv)
         c_num++;
     }
     
-    for(int ii; ii < c_num; ii++)
+    for(int ii = 0; ii < MAX_CHILDREN; ii++)
     {
         pthread_join(thread[ii], 0);
     }

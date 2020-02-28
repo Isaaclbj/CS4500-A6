@@ -171,7 +171,7 @@ char* serialize(Message* val)
 			*d_msg->ports);
 
 
-		char* addr_buffer = new char[sizeof(d_msg->addresses)];
+		char* addr_buffer = new char[sizeof(d_msg->addresses)] ();
 		std::cout << "addr_buffer with no load: " << addr_buffer << std::endl;
 		//Assumption: addresses is null-terminated
 

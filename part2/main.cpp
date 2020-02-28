@@ -1,9 +1,12 @@
+/*
 #if (defined _WIN32 || defined _WIN64)
 #include <winsock.h>
 #else
 #include <netinet/in.h>
 #endif
+*/
 
+#include <netinet/in.h>
 #include <iostream>
 
 #include <cstring>
@@ -96,11 +99,11 @@ int main()
 	r_msg->target_ = 3;
 	r_msg->id_ = 77777;
 
-	SOCKADDR_IN m_saddr;
+	sockaddr_in m_saddr;
 	m_saddr.sin_family = 44;
 	m_saddr.sin_port = 55;
 
-	IN_ADDR m_inaddr;
+	in_addr m_inaddr;
 	m_inaddr.s_addr = 66;
 
 	m_saddr.sin_addr = m_inaddr;
