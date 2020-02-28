@@ -19,7 +19,7 @@
 	the separator.
 
 	*/
-const char* SPACER = "%";
+const char* SPACER = "\\";
 size_t SPACER_SIZE = sizeof(SPACER);
 
 /*	
@@ -35,7 +35,7 @@ char* serialize(StringArray* val)
 {
 	char* size_buffer = new char[sizeof(val->vals_->size_) +
 		sizeof(val->vals_->size_) + 1];
-	sprintf(size_buffer, "%d", val->vals_->size_);
+	sprintf(size_buffer, "%ld", val->vals_->size_);
 
 	char* val_buffer = new char[sizeof(val->vals_->cstr_)];
 	memcpy(val_buffer, val->vals_->cstr_, sizeof(val->vals_->cstr_));
@@ -79,8 +79,8 @@ char* serialize(Message* val)
 			+ (SPACER_SIZE * 4)
 			+ 1];
 
-		sprintf(buffer, "%d%s%d%s%d%s", 
-			s_msg->kind_,
+		sprintf(buffer, "%d%s%ld%s%ld%s%ld%s", 
+			(int) s_msg->kind_,
 			SPACER,
 			s_msg->sender_, 
 			SPACER, 
@@ -111,8 +111,8 @@ char* serialize(Message* val)
 			+ (SPACER_SIZE * 6)							//this may need to increase if spaced between sin_zero entries
 			+ 1];
 
-		sprintf(buffer, "%d%s%d%s%d%s%d%s%d%s%d%s%d", 
-			r_msg->kind_,
+		sprintf(buffer, "%d%s%ld%s%ld%s%ld%s%d%s%d%s%d", 
+			(int) r_msg->kind_,
 			SPACER,
 			r_msg->sender_, 
 			SPACER,
@@ -133,7 +133,7 @@ char* serialize(Message* val)
 		strcat(buffer, (const char*)str_buffer);
 
 		char* port_buffer = new char[sizeof(r_msg->port)];
-		sprintf(port_buffer, "%d", r_msg->port);
+		sprintf(port_buffer, "%ld", r_msg->port);
 
 		strcat(buffer, SPACER);
 		strcat(buffer, (const char*)port_buffer);
@@ -157,8 +157,8 @@ char* serialize(Message* val)
 			+ (SPACER_SIZE * (sizeof(d_msg->addresses)/sizeof(String*)))
 			+ 1];
 
-		sprintf(buffer, "%d%s%d%s%d%s%d%s%d%s%d",
-			d_msg->kind_, 
+		sprintf(buffer, "%d%s%ld%s%ld%s%ld%s%ld%s%ld",
+			(int) d_msg->kind_, 
 			SPACER,
 			d_msg->sender_,
 			SPACER,
@@ -193,8 +193,8 @@ char* serialize(Message* val)
 			+ (SPACER_SIZE * 3)
 			+ sizeof(val->id_) + 1];
 
-		sprintf(buffer, "%d%s%d%s%d%s%d", 
-			val->kind_, 
+		sprintf(buffer, "%d%s%ld%s%ld%s%ld", 
+			(int) val->kind_, 
 			SPACER,
 			val->sender_, 
 			SPACER,
@@ -242,57 +242,124 @@ DoubleArray* deserialize_darray(char* val)
 //instead of incrementing
 Message* deserialize_msg(char* val)
 {
+	void *ret;
+	start:
 	if ((int)val[0] == static_cast<int>(MsgKind::Ack))
 	{
 		Ack* reformed = new Ack();
 		char* token;
 		token = strtok(val, SPACER);
 		reformed->kind_ = (MsgKind)atoi(token);
-		token = strtok(val, SPACER);
+		token = strtok(0, SPACER);
 		reformed->sender_ = (size_t)atoi(token);
-		token = strtok(val, SPACER);
+		token = strtok(0, SPACER);
 		reformed->target_ = (size_t)atoi(token);
-		token = strtok(val, SPACER);
+		token = strtok(0, SPACER);
 		reformed->id_ = (size_t)atoi(token);
+		ret = (void*)reformed;
+		
+		return (Message*) ret;
 	}
 	else if ((int)val[0] == static_cast<int>(MsgKind::Status))
 	{
-
+		Status* reformed = new Status();
+		char* token;
+		token = strtok(val, SPACER);
+		reformed->kind_ = (MsgKind)atoi(token);
+		token = strtok(0, SPACER);
+		reformed->sender_ = (size_t)atoi(token);
+		token = strtok(0, SPACER);
+		reformed->target_ = (size_t)atoi(token);
+		token = strtok(0, SPACER);
+		reformed->id_ = (size_t)atoi(token);
+		token = strtok(0, SPACER);
+		reformed->msg_ = new String(token);
+		ret = (void*)reformed;
+		
+		return (Message*) ret;
 	}
 	else if ((int)val[0] == static_cast<int>(MsgKind::Register))
 	{
-
+		Register* reformed = new Register();
+		char* token;
+		token = strtok(val, SPACER);
+		reformed->kind_ = (MsgKind)atoi(token);
+		token = strtok(0, SPACER);
+		reformed->sender_ = (size_t)atol(token);
+		token = strtok(0, SPACER);
+		reformed->target_ = (size_t)atol(token);
+		token = strtok(0, SPACER);
+		reformed->id_ = (size_t)atol(token);
+		token = strtok(0, SPACER);
+		reformed->client.sin_family = (short)atoi(token);
+		token = strtok(0, SPACER);
+		reformed->client.sin_port = (size_t)atol(token);
+		token = strtok(0, SPACER);
+		reformed->client.sin_addr.s_addr = (unsigned int) atoi(token);
+		token = strtok(0, SPACER);
+		reformed->port = (size_t) atol(token);
+		ret = (void*)reformed;
+		
+		return (Message*) ret;
 	}
 	else if ((int)val[0] == static_cast<int>(MsgKind::Directory))
 	{
-
+		Directory* reformed = new Directory();
+		char* token;
+		token = strtok(val, SPACER);
+		reformed->kind_ = (MsgKind)atoi(token);
+		token = strtok(0, SPACER);
+		reformed->sender_ = (size_t)atol(token);
+		token = strtok(0, SPACER);
+		reformed->target_ = (size_t)atol(token);
+		token = strtok(0, SPACER);
+		reformed->id_ = (size_t)atol(token);
+		token = strtok(0, SPACER);
+		reformed->client = (size_t)atol(token);
+		token = strtok(0, SPACER);
+		reformed->ports = (size_t*) atol(token);
+		token = strtok(0, SPACER);
+		reformed->addresses = (String**) atol(token);
+		ret = (void*)reformed;
+		return (Message*) ret;
 	}
 	else if ((int)val[0] == static_cast<int>(MsgKind::Nack))
 	{
-
+		goto general;
 	}
 	else if ((int)val[0] == static_cast<int>(MsgKind::Put))
 	{
-
+		goto general;
 	}
 	else if ((int)val[0] == static_cast<int>(MsgKind::Reply))
 	{
-
+		goto general;
 	}
 	else if ((int)val[0] == static_cast<int>(MsgKind::Get))
 	{
-
+		goto general;
 	}
 	else if ((int)val[0] == static_cast<int>(MsgKind::WaitAndGet))
 	{
-
+		goto general;
 	}
 	else if ((int)val[0] == static_cast<int>(MsgKind::Kill))
 	{
-
+		goto general;
 	}
 
-	Message m;
-	Message* pm = &m;
-	return pm;
+general:
+	Message *reformed = new Message();
+	char* token;
+	token = strtok(val, SPACER);
+	reformed->kind_ = (MsgKind)atoi(token);
+	token = strtok(0, SPACER);
+	reformed->sender_ = (size_t)atoi(token);
+	token = strtok(0, SPACER);
+	reformed->target_ = (size_t)atoi(token);
+	token = strtok(0, SPACER);
+	reformed->id_ = (size_t)atoi(token);
+	ret = (void*)reformed;
+
+	return (Message*) ret;
 }

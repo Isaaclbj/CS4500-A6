@@ -1,12 +1,9 @@
-/*
-#if (defined _WIN32 || defined _WIN64)
-#include <winsock.h>
-#else
+// #if (defined _WIN32 || defined _WIN64)
+// #include <winsock.h>
+// #else
 #include <netinet/in.h>
-#endif
-*/
+// #endif
 
-#include <netinet/in.h>
 #include <iostream>
 
 #include <cstring>
@@ -22,13 +19,7 @@ bool test_String_Array(StringArray* s_array)
 	std::cout << "serialized sarray: " << serialized << std::endl;
 	StringArray* deserialized = deserialize_sarray(serialized);
 
-	if (!deserialized->vals_->equals(s_array->vals_))
-	{
-		return false;
-	}
-	else {
-		return true;
-	}
+	return deserialized->vals_->equals(s_array->vals_);
 }
 
 bool test_Double_Array(DoubleArray* d_array)
@@ -36,37 +27,38 @@ bool test_Double_Array(DoubleArray* d_array)
 	char* serialized = serialize(d_array);
 	DoubleArray* deserialized = deserialize_darray(serialized);
 
-	if (!*d_array->vals_ == *deserialized->vals_)
-	{
-		return false;
-	}
-	return true;
+	return *d_array->vals_ == *deserialized->vals_;
 }
 
 bool test__Ack_Message(Message* ack_msg)
 {
 	char* serialized = serialize(ack_msg);
+	Message *ret = deserialize_msg(serialized);
 
-	return true;
+	return ret->equals(ack_msg);
 }
 
 bool test__Status_Message(Status* stat_msg)
 {
 	char* serialized = serialize(stat_msg);
+	Status *ret = (Status*) deserialize_msg(serialized);
 
-	return true;
+	return stat_msg->equals(ret);
 }
 
 bool test__Register_Message(Register* regi_msg)
 {
 	char* serialized = serialize(regi_msg);
-	return true;
+	Register *ret = (Register *)deserialize_msg(serialized);
+
+	return ret->equals(regi_msg);
 }
 
 bool test__Directory_Message(Directory* dir_msg)
 {
 	char* serialized = serialize(dir_msg);
-	return true;
+	Directory *ret = (Directory*)deserialize_msg(serialized);
+	return ret->equals(dir_msg);
 }
 
 int main()

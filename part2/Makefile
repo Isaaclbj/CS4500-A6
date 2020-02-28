@@ -1,10 +1,8 @@
-  
 build:
-	g++ ./src/main.cpp -lpthread -o server
+	g++ main.cpp -lpthread -o main
 
-run: clean build
+run: clear build
 	./main
-    ./test/testsuite.cpp -lpthread -o testsuite
-	
-clean:
+
+clear:
 	rm -f main
