@@ -72,7 +72,9 @@ bool test__Directory_Message(Directory* dir_msg)
 
 int main()
 {
+	String* abc = new String("abc");
 	StringArray* str_a = new StringArray();
+	str_a->vals_ = abc;
 	DoubleArray* dou_a = new DoubleArray();
 	Message* msg = new Message();
 	Ack* a_msg = new Ack();

@@ -23,19 +23,20 @@ char* serialize(StringArray* val)
 {
 
 	//a buffer for the data to load into
-	char* buffer;
+	char* size_buffer;
+	char* val_buffer;
 
-	//get the size of the cstr contained in the String
+	//memcopy String::size_
+	size_t* p_sos = &(val->vals_->size_);
+	memcpy(size_buffer, p_sos, val->vals_->size_);
+
+	//memcopy String::cstr_
 	size_t size_of_string = sizeof(val->vals_->cstr_);
+	memcpy(val_buffer, val->vals_, size_of_string);
 
-	//get the size of the size of the String (is this necessary?)
-	size_t size_of_size = val->vals_->size_;
+	strcat(val_buffer, (const char*)size_buffer);
 
-	//TODO, need to advance the buffer sizeof(val->vals_) first, then memcpy the size field onto buffer.
-	memcpy(buffer, &(val->vals_->size), size_of_size);
-	memcpy(buffer, val->vals_, size_of_string);			//should I add a nullpointer value to the end of this?
-
-	return buffer;
+	return val_buffer;
 }
 
 /*	In this case, we can just memcpy the double* into the buffer.
